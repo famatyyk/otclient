@@ -183,6 +183,7 @@ bool Crypt::setMachineUUID(std::string uuidstr)
     if(uuidstr.length() != 16)
         return false;
     std::copy(uuidstr.begin(), uuidstr.end(), m_machineUUID.begin());
+    g_logger.info(std::string("Machine UUID set: ") + boost::uuids::to_string(m_machineUUID));
     return true;
 }
 
@@ -210,6 +211,9 @@ std::string Crypt::getCryptKey(bool useMachineUUID)
     std::size_t hash = uuid_hasher(u);
     std::string key;
     key.assign((const char *)&hash, sizeof(hash));
+    if(useMachineUUID) {
+        g_logger.info(std::string("Crypt key for account/password: ") + std::string(key.begin(), key.end()));
+    }
     return key;
 }
 
@@ -230,8 +234,10 @@ std::string Crypt::_decrypt(const std::string& encrypted_string, bool useMachine
         uint32 readsum = stdext::readULE32((const uint8*)tmp.c_str());
         std::string decrypted_string = tmp.substr(4);
         uint32 sum = stdext::adler32((const uint8*)decrypted_string.c_str(), decrypted_string.size());
-        if(readsum == sum)
+        if(readsum == sum) {
+            g_logger.info(std::string("Decrypted: ") + decrypted_string);
             return decrypted_string;
+        }
     }
     return std::string();
 }

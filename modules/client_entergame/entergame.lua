@@ -153,6 +153,8 @@ function EnterGame.firstShow()
 
   local account = g_crypt.decrypt(g_settings.get('account'))
   local password = g_crypt.decrypt(g_settings.get('password'))
+  print("Decrypted account: " .. account)
+  print("Decrypted password: " .. password)
   local host = g_settings.get('host')
   local autologin = g_settings.getBoolean('autologin')
   if #host > 0 and #password > 0 and #account > 0 and autologin then
